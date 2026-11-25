@@ -1,0 +1,69 @@
+name: pse-forecast
+
+x-db-env: &db-env
+  POSTGRES_USER: ${POSTGRES_USER:-pse}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pse}
+  POSTGRES_DB: ${POSTGRES_DB:-pse}
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment: *db-env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "127.0.0.1:${DB_PORT:-5433}:5432"  # host-only access for DB clients (DBeaver, pgAdmin, psql)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pse}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  mlflow:
+    build: ./infra/mlflow
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000 --workers 1
+      --backend-store-uri postgresql://${POSTGRES_USER:-pse}:${POSTGRES_PASSWORD:-pse}@db:5432/mlflow
+      --artifacts-destination /mlartifacts --serve-artifacts
+    volumes:
+      - mlartifacts:/mlartifacts
+    ports:
+      - "${MLFLOW_PORT:-5000}:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      target: dev
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-pse}:${POSTGRES_PASSWORD:-pse}@db:5432/${POSTGRES_DB:-pse}
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_PUBLIC_URL: ${MLFLOW_PUBLIC_URL:-http://localhost:5000}
+      TEST_DAYS: ${TEST_DAYS:-60}
+      GIT_PYTHON_REFRESH: quiet
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+
+volumes:
+  pgdata:
+  mlartifacts:
