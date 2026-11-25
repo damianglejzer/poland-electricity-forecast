@@ -1,7 +1,7 @@
 COMPOSE := docker compose
 CLI := $(COMPOSE) exec backend python -m pse_forecast.cli
 
-.PHONY: help up down refresh train forecast publish test fe-check logs ps clean
+.PHONY: help up down refresh train forecast publish test fe-check e2e logs ps clean
 
 help: ## Show this help
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-10s %s\n", $$1, $$2}'
@@ -32,6 +32,11 @@ fe-check: ## Type-check and build the frontend
 	docker run --rm -v $(CURDIR)/frontend:/app -w /app -u $$(id -u):$$(id -g) -e HOME=/tmp node:20-alpine \
 		sh -c "npm ci --no-audit --no-fund && npm run build"
 
+e2e: ## Browser check of all pages + screenshots (stack must be running)
+	docker run --rm --network host -u $$(id -u):$$(id -g) -e HOME=/tmp -e BASE_URL -e API_URL \
+		-v $(CURDIR)/e2e:/e2e:ro -v $(CURDIR)/docs/screenshots:/screenshots \
+		mcr.microsoft.com/playwright:v1.52.0-noble sh -c "mkdir -p /tmp/e2e && cp /e2e/run.mjs /tmp/e2e/ && cd /tmp/e2e \
+		&& npm install --no-save --silent playwright@1.52.0 && node run.mjs"
 
 logs: ## Follow service logs
 	$(COMPOSE) logs -f --tail=100
