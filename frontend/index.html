@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>GridCast · Forecasting Poland's electricity demand</title>
+    <meta
+      name="description"
+      content="An end-to-end machine learning system that forecasts Poland's electricity demand for the next day, every 15 minutes, and compares itself with the grid operator's official forecast."
+    />
+    <meta property="og:title" content="GridCast · Forecasting Poland's electricity demand" />
+    <meta
+      property="og:description"
+      content="Day-ahead electricity demand forecasts with LightGBM, MLflow, FastAPI and React, benchmarked against the official forecast."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)" />
+    <script>
+      // Apply the theme before first paint: saved choice, else the operating system's preference.
+      try {
+        var saved = localStorage.getItem("theme");
+        var dark = saved ? saved === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        if (dark) document.documentElement.classList.add("dark");
+      } catch (e) {}
+    </script>
+  </head>
+  <body class="bg-bg text-ink antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 COMPOSE := docker compose
 CLI := $(COMPOSE) exec backend python -m pse_forecast.cli
 
-.PHONY: help up down refresh train forecast publish test logs ps clean
+.PHONY: help up down refresh train forecast publish test fe-check logs ps clean
 
 help: ## Show this help
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-10s %s\n", $$1, $$2}'
@@ -28,6 +28,9 @@ publish: ## Promote the current model + data to the public database (PUBLISH_DAT
 test: ## Lint + backend tests (in the backend container, SQLite, no network)
 	$(COMPOSE) run --rm --no-deps -e DATABASE_URL=sqlite:// backend sh -c "ruff check src tests && ruff format --check src tests && pytest -q"
 
+fe-check: ## Type-check and build the frontend
+	docker run --rm -v $(CURDIR)/frontend:/app -w /app -u $$(id -u):$$(id -g) -e HOME=/tmp node:20-alpine \
+		sh -c "npm ci --no-audit --no-fund && npm run build"
 
 
 logs: ## Follow service logs
