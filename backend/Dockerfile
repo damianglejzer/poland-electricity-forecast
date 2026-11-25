@@ -1,5 +1,7 @@
 # syntax=docker/dockerfile:1
-# Development image: full environment with dev tools and tests.
+# Two targets:
+#   dev  - full environment with dev tools and tests (local Docker Compose, `make test`)
+#   prod - slim runtime for the public API (the default target; used by Render)
 
 FROM python:3.12-slim AS base
 COPY --from=ghcr.io/astral-sh/uv:0.5.31 /uv /usr/local/bin/uv
@@ -18,3 +20,12 @@ RUN uv sync --frozen
 EXPOSE 8000
 CMD ["uvicorn", "pse_forecast.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
+FROM base AS prod
+RUN uv sync --frozen --no-dev --no-install-project
+COPY src ./src
+RUN uv sync --frozen --no-dev
+RUN useradd --create-home app
+USER app
+EXPOSE 8000
+# Render (and most PaaS) pass the port in $PORT.
+CMD ["sh", "-c", "uvicorn pse_forecast.api.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]

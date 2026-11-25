@@ -1,0 +1,25 @@
+# Render Blueprint for the public API (https://render.com/docs/blueprint-spec).
+# Render builds the last stage of backend/Dockerfile ("prod") and passes the port in $PORT.
+services:
+  - type: web
+    name: gridcast-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/health
+    autoDeploy: true
+    buildFilter:
+      paths:
+        - backend/**
+    envVars:
+      # Neon connection string (the same one you use for `make publish`).
+      - key: DATABASE_URL
+        sync: false
+      # Your Vercel URL, e.g. https://gridcast.vercel.app (comma-separate several).
+      - key: CORS_ORIGINS
+        sync: false
+      # No public MLflow server in production: hide the link on the model card.
+      - key: MLFLOW_PUBLIC_URL
+        value: ""
