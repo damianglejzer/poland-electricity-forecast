@@ -10,6 +10,7 @@ import { Layout } from "./components/Layout";
 import { Skeleton } from "./components/ui";
 import { ThemeProvider } from "./lib/theme";
 
+const Overview = lazy(() => import("./pages/Overview"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -34,6 +35,7 @@ createRoot(document.getElementById("root")!).render(
           <Suspense fallback={<PageFallback />}>
             <Routes>
               <Route element={<Layout />}>
+                <Route index element={<Overview />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
