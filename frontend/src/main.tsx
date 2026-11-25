@@ -14,6 +14,8 @@ const Overview = lazy(() => import("./pages/Overview"));
 const Forecast = lazy(() => import("./pages/Forecast"));
 const Accuracy = lazy(() => import("./pages/Accuracy"));
 const WhatIf = lazy(() => import("./pages/WhatIf"));
+const HowItWorks = lazy(() => import("./pages/HowItWorks"));
+const Model = lazy(() => import("./pages/Model"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -42,6 +44,8 @@ createRoot(document.getElementById("root")!).render(
                 <Route path="forecast" element={<Forecast />} />
                 <Route path="accuracy" element={<Accuracy />} />
                 <Route path="what-if" element={<WhatIf />} />
+                <Route path="how-it-works" element={<HowItWorks />} />
+                <Route path="model" element={<Model />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
