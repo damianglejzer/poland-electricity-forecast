@@ -50,6 +50,7 @@ services:
       MLFLOW_TRACKING_URI: http://mlflow:5000
       MLFLOW_PUBLIC_URL: ${MLFLOW_PUBLIC_URL:-http://localhost:5000}
       TEST_DAYS: ${TEST_DAYS:-60}
+      PUBLISH_DATABASE_URL: ${PUBLISH_DATABASE_URL:-}
       GIT_PYTHON_REFRESH: quiet
     ports:
       - "${BACKEND_PORT:-8000}:8000"

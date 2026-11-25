@@ -4,6 +4,7 @@ refresh   download new PSE demand and weather data
 train     train, evaluate and register a model (offline, on the author's machine)
 forecast  forecast the next day(s) with the deployed model, without retraining
 daily     refresh + forecast: what the scheduled job runs every day
+publish   promote the current model and data to the public database
 """
 
 import argparse
@@ -28,6 +29,8 @@ def main(argv: list[str] | None = None) -> int:
     train_p.add_argument("--test-days", type=int, default=None)
     sub.add_parser("forecast", help="forecast with the deployed model (no retraining)")
     sub.add_parser("daily", help="refresh the data, then forecast with the deployed model")
+    publish_p = sub.add_parser("publish", help="copy the model and data to the public database")
+    publish_p.add_argument("--target", default=None, help="database URL (default: env)")
     args = parser.parse_args(argv)
 
     if args.command in ("refresh", "daily"):
@@ -45,6 +48,10 @@ def main(argv: list[str] | None = None) -> int:
         from pse_forecast.training import train
 
         _print(train(test_days=args.test_days))
+    if args.command == "publish":
+        from pse_forecast.publish import publish
+
+        _print(publish(args.target))
     return 0
 
 

@@ -1,7 +1,7 @@
 COMPOSE := docker compose
 CLI := $(COMPOSE) exec backend python -m pse_forecast.cli
 
-.PHONY: help up down refresh train forecast test logs ps clean
+.PHONY: help up down refresh train forecast publish test logs ps clean
 
 help: ## Show this help
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "}; {printf "  %-10s %s\n", $$1, $$2}'
@@ -22,6 +22,8 @@ train: ## Train, evaluate and register a new model (MLflow), then forecast with 
 forecast: ## Forecast the next day with the current model (no retraining)
 	$(CLI) forecast
 
+publish: ## Promote the current model + data to the public database (PUBLISH_DATABASE_URL)
+	$(CLI) publish
 
 test: ## Lint + backend tests (in the backend container, SQLite, no network)
 	$(COMPOSE) run --rm --no-deps -e DATABASE_URL=sqlite:// backend sh -c "ruff check src tests && ruff format --check src tests && pytest -q"
