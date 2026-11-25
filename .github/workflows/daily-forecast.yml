@@ -1,0 +1,39 @@
+name: Daily forecast
+
+# Every morning: download the latest demand and weather data into the public database, then
+# forecast tomorrow with the published model. This job never retrains the model.
+#
+# PSE publishes its forecast for tomorrow around 09:00 Polish time; the second run is a safety net
+# if the first one was early or a source was briefly unavailable. Forecasts for days that have
+# already started are never overwritten, so re-running is always safe.
+
+on:
+  schedule:
+    - cron: "45 8 * * *" # 09:45 CET / 10:45 CEST
+    - cron: "30 13 * * *" # 14:30 CET / 15:30 CEST
+  workflow_dispatch:
+
+concurrency:
+  group: daily-forecast
+  cancel-in-progress: false
+
+jobs:
+  forecast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.5.31"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Install dependencies
+        run: uv sync --frozen --no-dev
+      - name: Refresh data and forecast tomorrow
+        run: uv run --no-dev python -m pse_forecast.cli daily
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
