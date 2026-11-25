@@ -12,6 +12,7 @@ import { ThemeProvider } from "./lib/theme";
 
 const Overview = lazy(() => import("./pages/Overview"));
 const Forecast = lazy(() => import("./pages/Forecast"));
+const Accuracy = lazy(() => import("./pages/Accuracy"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -38,6 +39,7 @@ createRoot(document.getElementById("root")!).render(
               <Route element={<Layout />}>
                 <Route index element={<Overview />} />
                 <Route path="forecast" element={<Forecast />} />
+                <Route path="accuracy" element={<Accuracy />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
