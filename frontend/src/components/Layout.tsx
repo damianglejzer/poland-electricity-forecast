@@ -91,6 +91,9 @@ function DataStatus() {
       {data?.model_version && (
         <div className="pl-4 text-muted">Model {data.model_version} · updated daily</div>
       )}
+      <div className="pl-4 text-[11px] text-muted" title={__BUILD_TIME__}>
+        Site version {__BUILD_TIME__.slice(0, 16).replace("T", " ")} UTC
+      </div>
     </div>
   );
 }
