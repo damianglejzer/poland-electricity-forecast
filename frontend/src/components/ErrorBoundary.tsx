@@ -16,7 +16,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { error: E
   render() {
     if (!this.state.error) return this.props.children;
     return (
-      <div className="card flex flex-col items-center px-6 py-14 text-center">
+      <div className="card m-4 flex flex-col items-center px-6 py-14 text-center">
         <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-surface-2">
           <AlertTriangle size={22} className="text-bad" />
         </div>
@@ -24,6 +24,9 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { error: E
         <p className="mt-1 max-w-sm text-[13px] text-ink-2">
           The site may have just been updated. Reloading usually fixes it.
         </p>
+        <code className="mt-3 max-w-lg break-words rounded-lg bg-surface-2 px-3 py-2 text-left text-[11px] text-muted">
+          {this.state.error.message}
+        </code>
         <button className="btn-primary mt-5" onClick={() => window.location.reload()}>
           <RotateCw size={15} /> Reload
         </button>

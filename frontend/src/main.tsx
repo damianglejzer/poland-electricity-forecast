@@ -6,6 +6,7 @@ import { type ComponentType, StrictMode, Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Layout } from "./components/Layout";
 import { Skeleton } from "./components/ui";
 import { ThemeProvider } from "./lib/theme";
@@ -57,24 +58,26 @@ function PageFallback() {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <BrowserRouter>
-          <Suspense fallback={<PageFallback />}>
-            <Routes>
-              <Route element={<Layout />}>
-                <Route index element={<Overview />} />
-                <Route path="forecast" element={<Forecast />} />
-                <Route path="accuracy" element={<Accuracy />} />
-                <Route path="what-if" element={<WhatIf />} />
-                <Route path="how-it-works" element={<HowItWorks />} />
-                <Route path="model" element={<Model />} />
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <BrowserRouter>
+            <Suspense fallback={<PageFallback />}>
+              <Routes>
+                <Route element={<Layout />}>
+                  <Route index element={<Overview />} />
+                  <Route path="forecast" element={<Forecast />} />
+                  <Route path="accuracy" element={<Accuracy />} />
+                  <Route path="what-if" element={<WhatIf />} />
+                  <Route path="how-it-works" element={<HowItWorks />} />
+                  <Route path="model" element={<Model />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   </StrictMode>,
 );
