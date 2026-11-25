@@ -22,6 +22,7 @@ import { SITE } from "../config";
 import { api } from "../lib/api";
 import { relativeTime } from "../lib/format";
 import { useTheme } from "../lib/theme";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { Skeleton } from "./ui";
 import { WakeBanner } from "./WakeBanner";
 
@@ -220,7 +221,9 @@ export function Layout() {
               </div>
             }
           >
-            <Outlet />
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
           </Suspense>
           <Footer />
         </main>

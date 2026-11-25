@@ -2,7 +2,7 @@ import "@fontsource-variable/inter";
 import "./index.css";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { StrictMode, Suspense, lazy } from "react";
+import { type ComponentType, StrictMode, Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
@@ -10,13 +10,36 @@ import { Layout } from "./components/Layout";
 import { Skeleton } from "./components/ui";
 import { ThemeProvider } from "./lib/theme";
 
-const Overview = lazy(() => import("./pages/Overview"));
-const Forecast = lazy(() => import("./pages/Forecast"));
-const Accuracy = lazy(() => import("./pages/Accuracy"));
-const WhatIf = lazy(() => import("./pages/WhatIf"));
-const HowItWorks = lazy(() => import("./pages/HowItWorks"));
-const Model = lazy(() => import("./pages/Model"));
-const NotFound = lazy(() => import("./pages/NotFound"));
+/**
+ * Pages are separate files whose names change with every build. A tab opened before a new
+ * deployment may ask for a file that no longer exists; reload once to pick up the new version.
+ */
+const RELOAD_KEY = "reloaded-for-new-version";
+function page(load: () => Promise<{ default: ComponentType }>) {
+  return lazy(() =>
+    load()
+      .then((m) => {
+        sessionStorage.removeItem(RELOAD_KEY);
+        return m;
+      })
+      .catch((err) => {
+        if (!sessionStorage.getItem(RELOAD_KEY)) {
+          sessionStorage.setItem(RELOAD_KEY, "1");
+          window.location.reload();
+          return new Promise<never>(() => {}); // wait for the reload
+        }
+        throw err;
+      }),
+  );
+}
+
+const Overview = page(() => import("./pages/Overview"));
+const Forecast = page(() => import("./pages/Forecast"));
+const Accuracy = page(() => import("./pages/Accuracy"));
+const WhatIf = page(() => import("./pages/WhatIf"));
+const HowItWorks = page(() => import("./pages/HowItWorks"));
+const Model = page(() => import("./pages/Model"));
+const NotFound = page(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
   // Retries cover the free API server waking up from sleep.
