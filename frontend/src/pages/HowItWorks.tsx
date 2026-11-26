@@ -419,7 +419,8 @@ export default function HowItWorks() {
           <>
             <p>
               Electricity can't easily be stored, so power plants must produce exactly what the country uses,
-              every moment. That's why the grid operator needs to know tomorrow's demand in advance.
+              every moment. That's why the grid operator needs to know tomorrow's demand in advance: too much
+              energy is wasted money, too little means shortages.
             </p>
             <p>The good news: demand is very regular. People sleep, work and rest on a schedule.</p>
           </>

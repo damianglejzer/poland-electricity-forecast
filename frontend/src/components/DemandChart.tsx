@@ -20,7 +20,7 @@ export function useNarrow(breakpoint = 640) {
 
 export const SERIES_LABELS = {
   actual: "Actual demand",
-  model: "My model",
+  model: "GridCast model",
   pse: "Official forecast (PSE)",
   baseline: "Naive guess (last week)",
 } as const;
@@ -158,7 +158,7 @@ export function DemandChart({
   }, [series, actualsUntil]);
   return (
     <Chart
-      ariaLabel="Line chart of actual electricity demand, my model's forecast and the official forecast"
+      ariaLabel="Line chart of actual electricity demand, the GridCast forecast and the official forecast"
       option={demandOption(series, c, nowIdx, narrow, showBaseline)}
       height={height}
     />
