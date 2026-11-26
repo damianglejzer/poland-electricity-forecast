@@ -65,7 +65,7 @@ function demandOption(
           ? {
               silent: true,
               symbol: "none",
-              label: { formatter: "now", color: c.muted, fontSize: 11 },
+              label: { formatter: "latest data", color: c.muted, fontSize: 11 },
               lineStyle: { color: c.muted, type: "dashed", width: 1 },
               data: [{ xAxis: nowIdx }],
             }

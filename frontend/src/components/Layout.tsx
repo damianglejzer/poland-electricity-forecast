@@ -174,7 +174,10 @@ export function Layout() {
           <DataStatus />
           <div className="mt-3 flex items-center justify-between px-1 text-[12px] text-muted">
             <span>by {SITE.author}</span>
-            <AuthorLinks />
+            <div className="flex items-center gap-1">
+              <AuthorLinks />
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </aside>
@@ -212,9 +215,6 @@ export function Layout() {
           </div>
         )}
 
-        <div className="absolute right-6 top-5 hidden items-center gap-1 lg:flex">
-          <ThemeToggle />
-        </div>
         <main key={pathname} className="mx-auto max-w-[1280px] px-4 py-8 sm:px-6 lg:px-12 lg:py-10">
           <Suspense
             fallback={
