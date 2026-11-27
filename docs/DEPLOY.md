@@ -42,7 +42,8 @@ Allow about 30–45 minutes. Do the steps in order: each one needs a value from 
    postgresql://neondb_owner:xxxxx@ep-something-123456.eu-central-1.aws.neon.tech/neondb?sslmode=require
    ```
    Use the plain (not "pooled") string. You can paste it as-is: the app converts `postgresql://` to the right driver itself.
-3. Keep it secret: anyone with it can change your data.
+3. Keep it secret: this is the **owner** password, which can change or delete everything. It
+   stays on your laptop only. Render and GitHub get limited users (step 3b).
 
 ## 3. Publish your model and data to Neon
 
@@ -58,11 +59,32 @@ Allow about 30–45 minutes. Do the steps in order: each one needs a value from 
    ```
    This creates the tables in Neon and copies the data, the evaluation and the current model. It takes under a minute and prints row counts and the published model version.
 
+## 3b. Create limited database users (security)
+
+Render and GitHub Actions should not use the owner password. If one of their credentials ever leaked, the damage would then be limited:
+
+| User | Used by | Allowed to |
+|---|---|---|
+| `neondb_owner` | your laptop (`make publish`) | everything |
+| `gridcast_writer` | GitHub Actions daily job | add demand, weather and forecasts. **Can't** change the model, delete rows or drop tables |
+| `gridcast_api` | Render API | **read only**; every query stops after 10 s |
+
+1. Open [`infra/neon/roles.sql`](../infra/neon/roles.sql) and replace the two `CHANGE-ME-…` passwords with long random ones. To generate one, run `openssl rand -base64 24 | tr -d '/+='`. Don't commit the file with real passwords.
+2. Neon console → your project → **SQL Editor**. Paste the whole file and click **Run**. Run it **after** step 3, because it grants access to the tables `make publish` created.
+3. Build two connection strings from the owner string by swapping the user name and password:
+   ```
+   postgresql://gridcast_api:API-PASSWORD@ep-...neon.tech/neondb?sslmode=require      ← for Render
+   postgresql://gridcast_writer:WRITER-PASSWORD@ep-...neon.tech/neondb?sslmode=require ← for GitHub
+   ```
+   Keep `?sslmode=require`: it encrypts the connection.
+
+Create the users with the SQL above, not with Neon's "Roles" page: users created there get administrator rights.
+
 ## 4. Deploy the API (Render)
 
 1. Render dashboard → **New → Blueprint** → connect your GitHub repository. Render finds `render.yaml` and proposes a web service called `gridcast-api`.
 2. Fill in the two secret values it asks for:
-   - `DATABASE_URL`: the Neon connection string from step 2.
+   - `DATABASE_URL`: the **`gridcast_api`** (read-only) connection string from step 3b.
    - `CORS_ORIGINS`: for now `http://localhost:5173`. You'll replace it with the Vercel URL in step 6.
 3. Click **Apply**. The first build takes about 5–8 minutes.
 4. Check it: open `https://gridcast-api-XXXX.onrender.com/api/health`. It should show `{"status":"ok"}`. Also try `/api/docs` (interactive API docs) and `/api/kpis`.
@@ -102,7 +124,7 @@ Browsers only let the website call the API if the API allows its address.
 
 1. GitHub repository → **Settings → Secrets and variables → Actions → New repository secret**:
    - Name: `DATABASE_URL`
-   - Value: the Neon connection string.
+   - Value: the **`gridcast_writer`** connection string from step 3b.
 2. **Actions** tab → enable workflows if GitHub asks.
 3. Open **Daily forecast** → **Run workflow** to test it now. A green run means new data was downloaded and tomorrow's forecast written. It then runs automatically at 08:45 and 13:30 UTC every day.
 4. **CI** runs on every push (tests, frontend build, Docker image). Its badge in the README turns green.
@@ -150,3 +172,6 @@ make publish                  # if it's better: promote it (the daily job uses i
 | Daily forecast job fails with a connection error | The `DATABASE_URL` secret is missing or mistyped. |
 | Daily forecast job says "Weather forecast missing" | Open-Meteo was briefly unavailable; the 13:30 run usually fixes it, or run the workflow manually. |
 | "No model deployed yet" | Run `make train` locally, then `make publish`. |
+| Render logs show `permission denied` or `read-only transaction` | Expected if something tries to write: the API user is read-only. If pages fail, check that `MANAGE_SCHEMA=false` is set on Render and that `roles.sql` ran after the first publish. |
+| Daily job fails with `permission denied for table …` | `roles.sql` hasn't been run yet, or it ran before the first `make publish`. Run it (again) in the Neon SQL editor. |
+| You see "Too many requests" while testing | The API limits each visitor to 120 requests and 30 what-if scenarios per minute. Wait a minute. |

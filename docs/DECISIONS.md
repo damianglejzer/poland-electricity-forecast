@@ -156,6 +156,16 @@ Before release, the full production path was run locally:
 3. serve a frontend built with `VITE_API_URL` pointing at it, from another origin (exercises CORS), and run the Playwright suite;
 4. run `cli daily` from a clean Python environment the way GitHub Actions does, checking that today's forecast is kept and tomorrow's is written.
 
+### 25. Security for a public, free-tier deployment
+The API is read-only by construction, so the remaining risks are abuse and leaked credentials. Defences are layered:
+- in-memory per-visitor and global rate limits, with a stricter one plus a concurrency cap for the model-running what-if endpoint;
+- response caching (data changes once a day), so floods don't reach Neon's metered compute;
+- body-size limits and bounded inputs;
+- separate database users: the API is read-only with a statement timeout; the daily job can only insert and update data tables; only the author's machine holds the owner password;
+- CSP and security headers on the site.
+
+**Alternatives.** A Redis-backed limiter (more robust across restarts and instances, but another service to host for one small instance) and an API gateway (paid tiers). Full threat list in [SECURITY.md](SECURITY.md).
+
 ## Process notes
 - `make` wasn't installed at the start; the user installed it, so no wrapper script was needed.
 - Git identity for this repo was set locally (`git config user.*`) because no global identity existed.

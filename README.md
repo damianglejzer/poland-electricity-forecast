@@ -137,27 +137,35 @@ backend/                  Python package (uv, Ruff, pytest), multi-stage Dockerf
     model_store.py        model artifacts in the database
     forecast.py           forecasting with the deployed model (ex-ante record)
     publish.py            promote model + data to the public database
+    security.py           rate limits, caching, request limits, security headers
     services.py, api/     read-only FastAPI service
   tests/                  parsing (real PSE fixture incl. DST), validation, features, API, publish/forecast
 frontend/                 React + TypeScript + Vite + Tailwind + ECharts (vercel.json for deployment)
 e2e/run.mjs               Playwright check of every page, interactions and screenshots
-.github/workflows/        CI (lint, tests, build, image smoke test) and the daily forecast job
+.github/                  CI, the daily forecast job, Dependabot
+infra/neon/roles.sql      least-privilege database users for production
 render.yaml               Render blueprint for the API
-docs/                     DECISIONS.md, DEPLOY.md, screenshots
+docs/                     DECISIONS.md, DEPLOY.md, SECURITY.md, screenshots
 ```
 
 ## Quality
 
-- **30 backend tests:**
+- **41 backend tests:**
   - PSE parsing (a real 100-slot DST-day fixture), validation and calendar;
   - DST grids, lag correctness and an explicit **no-leakage** test;
   - the API end to end on synthetic data;
-  - publishing and the ex-ante forecast rule.
+  - publishing and the ex-ante forecast rule;
+  - security: read-only routes, rate limits, request limits, headers.
 - **CI on every push:**
   - Ruff and pytest;
   - frontend type-check and build;
   - a build and smoke test of the production Docker image.
 - **Browser test:** `make e2e` opens every page in dark, light and mobile views and applies a what-if preset. It checks that no refresh or retrain control exists and fails on any console or HTTP error.
+- **Secure by design** ([docs/SECURITY.md](docs/SECURITY.md)):
+  - a read-only public API with per-visitor and global rate limits, caching and request limits;
+  - least-privilege database users (the API can only read, the daily job can only add data);
+  - Content-Security-Policy and security headers;
+  - least-privilege CI and Dependabot.
 - **Reproducible:**
   - locked Python dependencies (`uv`, with a 2-week `exclude-newer` window);
   - exact npm versions;
