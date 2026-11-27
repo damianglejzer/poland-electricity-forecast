@@ -25,6 +25,17 @@ async function newPage(theme, viewport = { width: 1440, height: 900 }) {
     timezoneId: "Europe/Warsaw",
     colorScheme: theme,
   });
+  // Newer Chromium (Chrome, Edge) returns a Promise from scroll methods; older test browsers
+  // don't. Emulate it so code that wrongly returns scrollTo's result from an effect fails here.
+  await ctx.addInitScript(() => {
+    for (const name of ["scrollTo", "scroll", "scrollBy"]) {
+      const original = window[name].bind(window);
+      window[name] = (...args) => {
+        original(...args);
+        return Promise.resolve();
+      };
+    }
+  });
   const page = await ctx.newPage();
   page.on("console", (m) => m.type() === "error" && problems.push(`[console] ${page.url()}: ${m.text()}`));
   page.on("pageerror", (e) => problems.push(`[pageerror] ${page.url()}: ${e.message}`));
@@ -44,6 +55,16 @@ async function visit(page, p, file) {
 // Dark mode comes from the OS preference (no saved choice).
 const dark = await newPage("dark");
 for (const p of PAGES) await visit(dark, p, p.name);
+
+// Navigate with the menu (in-app), like a visitor: catches errors that only happen on page changes.
+await dark.goto(`${BASE}/`, { waitUntil: "networkidle" });
+for (const label of ["Forecast", "Accuracy", "What-if", "How it works", "Model card", "Overview"]) {
+  await dark.click(`aside nav a:has-text("${label}")`);
+  await dark.waitForTimeout(1500);
+  if (await dark.locator("text=couldn't be displayed").count())
+    problems.push(`[navigation] ${label}: ${await dark.locator("code").first().innerText()}`);
+}
+console.log("ok  menu navigation through every page");
 
 // The public site is read-only: no refresh / retrain controls anywhere.
 for (const p of PAGES) {

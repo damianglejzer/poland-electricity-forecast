@@ -162,7 +162,11 @@ function Footer() {
 export function Layout() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
-  useEffect(() => window.scrollTo(0, 0), [pathname]);
+  // Braces matter: an effect may only return a clean-up function. Newer Chromium browsers
+  // (Chrome, Edge) return a Promise from scrollTo, which React would later try to call.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   return (
     <div className="min-h-screen lg:flex">
       <aside className="hidden w-64 shrink-0 border-r border-line bg-surface lg:block">
