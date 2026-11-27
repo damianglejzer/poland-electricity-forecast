@@ -14,7 +14,7 @@ services:
       paths:
         - backend/**
     envVars:
-      # Neon connection string (the same one you use for `make publish`).
+      # Neon connection string of the READ-ONLY user `gridcast_api` (see docs/DEPLOY.md).
       - key: DATABASE_URL
         sync: false
       # Your Vercel URL, e.g. https://gridcast.vercel.app (comma-separate several).
@@ -23,3 +23,9 @@ services:
       # No public MLflow server in production: hide the link on the model card.
       - key: MLFLOW_PUBLIC_URL
         value: ""
+      # Render sits behind a proxy: read the visitor's address from its headers (rate limiting).
+      - key: TRUST_PROXY_HEADERS
+        value: "true"
+      # The API connects with a read-only database user, so it must not try to create tables.
+      - key: MANAGE_SCHEMA
+        value: "false"
