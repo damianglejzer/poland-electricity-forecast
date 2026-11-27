@@ -45,3 +45,19 @@ def test_weather_cloud_cover_range():
     )
     with pytest.raises(pandera.errors.SchemaErrors):
         validate_weather(df)
+
+
+def test_ipv4_is_pinned_for_database_hosts(monkeypatch):
+    import socket
+
+    from pse_forecast.db import ipv4_connect_args
+
+    def fake_getaddrinfo(host, port, family, *args):
+        assert family == socket.AF_INET
+        return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("18.196.251.61", 0))]
+
+    monkeypatch.setattr(socket, "getaddrinfo", fake_getaddrinfo)
+    url = "postgresql+psycopg://u:p@ep-x.eu-central-1.aws.neon.tech/neondb?sslmode=require"
+    assert ipv4_connect_args(url) == {"hostaddr": "18.196.251.61"}
+    assert ipv4_connect_args("postgresql+psycopg://u:p@10.0.0.5/db") == {}
+    assert ipv4_connect_args("sqlite://") == {}

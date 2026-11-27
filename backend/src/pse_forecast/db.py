@@ -1,5 +1,7 @@
 """Database schema and small helpers (SQLAlchemy Core, works on Postgres and SQLite)."""
 
+import ipaddress
+import socket
 from collections.abc import Iterable
 from functools import lru_cache
 
@@ -20,6 +22,7 @@ from sqlalchemy import (
     create_engine,
     select,
 )
+from sqlalchemy.engine import make_url
 from sqlalchemy.pool import StaticPool
 
 from pse_forecast.config import get_settings
@@ -119,6 +122,28 @@ def reset_engines() -> None:
     _engine.cache_clear()
 
 
+def ipv4_connect_args(url: str) -> dict:
+    """Pin an IPv4 address for a dual-stack database host such as Neon.
+
+    Docker's default network and GitHub's runners have no IPv6 route, yet the driver may try only
+    a host's IPv6 addresses and fail with "Network is unreachable". libpq connects to `hostaddr`
+    while still using the host name for TLS (SNI), which Neon needs to route the connection.
+    """
+    host = make_url(url).host
+    if not host:
+        return {}
+    try:
+        ipaddress.ip_address(host)
+        return {}  # already an IP address
+    except ValueError:
+        pass
+    try:
+        infos = socket.getaddrinfo(host, None, socket.AF_INET, socket.SOCK_STREAM)
+    except OSError:
+        return {}  # let the driver report the problem
+    return {"hostaddr": infos[0][4][0]} if infos else {}
+
+
 @lru_cache
 def _engine(url: str) -> Engine:
     if url.startswith("sqlite"):
@@ -126,7 +151,13 @@ def _engine(url: str) -> Engine:
     else:
         # Pre-ping and recycle: serverless Postgres (Neon) closes idle connections when it sleeps.
         engine = create_engine(
-            url, pool_pre_ping=True, pool_size=5, max_overflow=5, pool_recycle=300, pool_timeout=10
+            url,
+            connect_args=ipv4_connect_args(url),
+            pool_pre_ping=True,
+            pool_size=5,
+            max_overflow=5,
+            pool_recycle=300,
+            pool_timeout=10,
         )
     if get_settings().manage_schema:
         metadata.create_all(engine)
