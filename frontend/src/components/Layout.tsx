@@ -42,8 +42,8 @@ function Brand() {
         <Zap size={17} fill="currentColor" />
       </div>
       <div className="leading-tight">
-        <div className="font-semibold tracking-tight">{SITE.name}</div>
-        <div className="text-[11px] text-muted">Poland's electricity demand</div>
+        <div className="font-semibold tracking-tight">{SITE.shortName}</div>
+        <div className="text-[12px] font-medium text-muted">{SITE.tagline}</div>
       </div>
     </Link>
   );

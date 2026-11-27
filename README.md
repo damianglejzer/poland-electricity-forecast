@@ -1,11 +1,11 @@
-# GridCast: forecasting Poland's electricity demand
+# Poland Electricity Demand Forecast
 
-[![CI](https://github.com/YOUR-USERNAME/gridcast/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR-USERNAME/gridcast/actions/workflows/ci.yml)
-[![Daily forecast](https://github.com/YOUR-USERNAME/gridcast/actions/workflows/daily-forecast.yml/badge.svg)](https://github.com/YOUR-USERNAME/gridcast/actions/workflows/daily-forecast.yml)
+[![CI](https://github.com/YOUR-USERNAME/poland-electricity-forecast/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR-USERNAME/poland-electricity-forecast/actions/workflows/ci.yml)
+[![Daily forecast](https://github.com/YOUR-USERNAME/poland-electricity-forecast/actions/workflows/daily-forecast.yml/badge.svg)](https://github.com/YOUR-USERNAME/poland-electricity-forecast/actions/workflows/daily-forecast.yml)
 
 **Live demo: https://YOUR-APP.vercel.app** (the first load can take ~30 s while the free API server wakes up)
 
-GridCast is an end-to-end machine-learning system. Every day it forecasts **Poland's national electricity demand for the next day, every 15 minutes** (96 values per day), and scores itself against the **official forecast published by the grid operator PSE**.
+An end-to-end machine-learning system. Every day it forecasts **Poland's national electricity demand for the next day, every 15 minutes** (96 values per day), and scores itself against the **official forecast published by the grid operator PSE**.
 
 It covers the whole lifecycle:
 
@@ -23,7 +23,7 @@ Hold-out test: the **last 60 complete days before training** (26 Sep – 24 Nov 
 
 | Forecast | MAPE | MAE | RMSE |
 |---|---:|---:|---:|
-| **GridCast (LightGBM)** | **2.51 %** | **483 MW** | **626 MW** |
+| **This model (LightGBM)** | **2.51 %** | **483 MW** | **626 MW** |
 | PSE official day-ahead forecast | 1.96 % | 366 MW | 483 MW |
 | Naive: same time 7 days ago | 3.97 % | 766 MW | 1,087 MW |
 
@@ -88,7 +88,7 @@ flowchart LR
 Requirements: **Docker** (with Compose) and **make**. No API keys.
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/gridcast.git && cd gridcast
+git clone https://github.com/YOUR-USERNAME/poland-electricity-forecast.git && cd poland-electricity-forecast
 make up                      # Postgres, MLflow, API and UI
 make refresh && make train   # download ~2.5 years of data (~1 min), train and register (~1.5 min)
 ```

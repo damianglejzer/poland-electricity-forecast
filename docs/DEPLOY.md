@@ -1,4 +1,4 @@
-# Deploying GridCast (free tiers)
+# Deploying the Poland Electricity Demand Forecast (free tiers)
 
 This guide puts the project online with four free services:
 
@@ -26,17 +26,17 @@ Allow about 30–45 minutes. Do the steps in order: each one needs a value from 
 
 ## 1. Push the code to GitHub
 
-1. On GitHub, create a new **empty, public** repository (no README or license; for example `gridcast`).
+1. On GitHub, create a new **empty, public** repository (no README or license; for example `poland-electricity-forecast`).
 2. In the project folder:
    ```bash
-   git remote add origin https://github.com/YOUR-USERNAME/gridcast.git
+   git remote add origin https://github.com/YOUR-USERNAME/poland-electricity-forecast.git
    git push -u origin main
    ```
 3. In `README.md`, replace `YOUR-USERNAME` / `YOUR-APP` later, once you know the URLs.
 
 ## 2. Create the database (Neon)
 
-1. Neon console → **New project**. Name it `gridcast`, choose region **AWS Europe Central (Frankfurt)** (close to Render's Frankfurt region) and Postgres 16 or newer.
+1. Neon console → **New project**. Name it `poland-electricity-forecast`, choose region **AWS Europe Central (Frankfurt)** (close to Render's Frankfurt region) and Postgres 16 or newer.
 2. On the project dashboard click **Connect** and copy the connection string. It looks like:
    ```
    postgresql://neondb_owner:xxxxx@ep-something-123456.eu-central-1.aws.neon.tech/neondb?sslmode=require
@@ -66,15 +66,15 @@ Render and GitHub Actions should not use the owner password. If one of their cre
 | User | Used by | Allowed to |
 |---|---|---|
 | `neondb_owner` | your laptop (`make publish`) | everything |
-| `gridcast_writer` | GitHub Actions daily job | add demand, weather and forecasts. **Can't** change the model, delete rows or drop tables |
-| `gridcast_api` | Render API | **read only**; every query stops after 10 s |
+| `forecast_writer` | GitHub Actions daily job | add demand, weather and forecasts. **Can't** change the model, delete rows or drop tables |
+| `forecast_api` | Render API | **read only**; every query stops after 10 s |
 
 1. Open [`infra/neon/roles.sql`](../infra/neon/roles.sql) and replace the two `CHANGE-ME-…` passwords with long random ones. To generate one, run `openssl rand -base64 24 | tr -d '/+='`. Don't commit the file with real passwords.
 2. Neon console → your project → **SQL Editor**. Paste the whole file and click **Run**. Run it **after** step 3, because it grants access to the tables `make publish` created.
 3. Build two connection strings from the owner string by swapping the user name and password:
    ```
-   postgresql://gridcast_api:API-PASSWORD@ep-...neon.tech/neondb?sslmode=require      ← for Render
-   postgresql://gridcast_writer:WRITER-PASSWORD@ep-...neon.tech/neondb?sslmode=require ← for GitHub
+   postgresql://forecast_api:API-PASSWORD@ep-...neon.tech/neondb?sslmode=require      ← for Render
+   postgresql://forecast_writer:WRITER-PASSWORD@ep-...neon.tech/neondb?sslmode=require ← for GitHub
    ```
    Keep `?sslmode=require`: it encrypts the connection.
 
@@ -82,12 +82,12 @@ Create the users with the SQL above, not with Neon's "Roles" page: users created
 
 ## 4. Deploy the API (Render)
 
-1. Render dashboard → **New → Blueprint** → connect your GitHub repository. Render finds `render.yaml` and proposes a web service called `gridcast-api`.
+1. Render dashboard → **New → Blueprint** → connect your GitHub repository. Render finds `render.yaml` and proposes a web service called `poland-electricity-api`.
 2. Fill in the two secret values it asks for:
-   - `DATABASE_URL`: the **`gridcast_api`** (read-only) connection string from step 3b.
+   - `DATABASE_URL`: the **`forecast_api`** (read-only) connection string from step 3b.
    - `CORS_ORIGINS`: for now `http://localhost:5173`. You'll replace it with the Vercel URL in step 6.
 3. Click **Apply**. The first build takes about 5–8 minutes.
-4. Check it: open `https://gridcast-api-XXXX.onrender.com/api/health`. It should show `{"status":"ok"}`. Also try `/api/docs` (interactive API docs) and `/api/kpis`.
+4. Check it: open `https://poland-electricity-api-XXXX.onrender.com/api/health`. It should show `{"status":"ok"}`. Also try `/api/docs` (interactive API docs) and `/api/kpis`.
 
 > Prefer clicking through the UI instead of a Blueprint? Create a **Web Service** from the repo, set *Language* = Docker, *Dockerfile path* = `./backend/Dockerfile`, *Docker build context* = `./backend`, *Health check path* = `/api/health`, instance type **Free**, and add the same environment variables plus `MLFLOW_PUBLIC_URL` with an empty value.
 
@@ -99,12 +99,12 @@ Create the users with the SQL above, not with Neon's "Roles" page: users created
 
    | Name | Value |
    |---|---|
-   | `VITE_API_URL` | your Render URL, e.g. `https://gridcast-api-xxxx.onrender.com` (no trailing slash, no `/api`) |
-   | `VITE_GITHUB_URL` | `https://github.com/YOUR-USERNAME/gridcast` (shows "Source code" buttons) |
+   | `VITE_API_URL` | your Render URL, e.g. `https://poland-electricity-api-xxxx.onrender.com` (no trailing slash, no `/api`) |
+   | `VITE_GITHUB_URL` | `https://github.com/YOUR-USERNAME/poland-electricity-forecast` (shows "Source code" buttons) |
    | `VITE_LINKEDIN_URL` | your LinkedIn profile URL (optional) |
    | `VITE_AUTHOR_NAME` | your name as it should appear (optional; defaults to Damian Glejzer) |
 
-4. Click **Deploy**. Note the URL, e.g. `https://gridcast.vercel.app`. You can rename the project to get a nicer subdomain.
+4. Click **Deploy**. Note the URL, e.g. `https://poland-electricity-forecast.vercel.app`. You can rename the project to get a nicer subdomain.
 
 `VITE_*` variables are built into the site, so after changing one, redeploy (Deployments → ⋯ → Redeploy).
 
@@ -112,9 +112,9 @@ Create the users with the SQL above, not with Neon's "Roles" page: users created
 
 Browsers only let the website call the API if the API allows its address.
 
-1. Render → `gridcast-api` → **Environment** → set `CORS_ORIGINS` to your Vercel URL, e.g.
+1. Render → `poland-electricity-api` → **Environment** → set `CORS_ORIGINS` to your Vercel URL, e.g.
    ```
-   https://gridcast.vercel.app
+   https://poland-electricity-forecast.vercel.app
    ```
    Add more addresses comma-separated if needed (for example a custom domain).
 2. Save; Render redeploys automatically (~1 min).
@@ -124,7 +124,7 @@ Browsers only let the website call the API if the API allows its address.
 
 1. GitHub repository → **Settings → Secrets and variables → Actions → New repository secret**:
    - Name: `DATABASE_URL`
-   - Value: the **`gridcast_writer`** connection string from step 3b.
+   - Value: the **`forecast_writer`** connection string from step 3b.
 2. **Actions** tab → enable workflows if GitHub asks.
 3. Open **Daily forecast** → **Run workflow** to test it now. A green run means new data was downloaded and tomorrow's forecast written. It then runs automatically at 08:45 and 13:30 UTC every day.
 4. **CI** runs on every push (tests, frontend build, Docker image). Its badge in the README turns green.
@@ -136,7 +136,7 @@ GitHub pauses scheduled workflows in repositories with **no activity for 60 days
 So recruiters don't wait for Render to wake up:
 
 1. Create a free account at [UptimeRobot](https://uptimerobot.com).
-2. **Add New Monitor** → type *HTTP(s)*, URL `https://gridcast-api-xxxx.onrender.com/api/health`, interval **10 minutes**.
+2. **Add New Monitor** → type *HTTP(s)*, URL `https://poland-electricity-api-xxxx.onrender.com/api/health`, interval **10 minutes**.
 
 This also gives you an uptime history and an email if the API goes down. Render's free plan includes 750 instance-hours per month, enough for one always-on service.
 

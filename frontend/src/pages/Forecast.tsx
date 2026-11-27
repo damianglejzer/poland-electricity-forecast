@@ -109,7 +109,7 @@ function DayStats({ s, day }: { s: Series; day: DayInfo }) {
   };
   const rows: [string, "actual" | "model" | "pse", string][] = [
     ["Actual", "actual", "bg-ink"],
-    ["GridCast", "model", "bg-series-model"],
+    ["Model", "model", "bg-series-model"],
     ["Official", "pse", "bg-series-pse"],
   ];
   const kind = day.model_kind ? KIND_LABEL[day.model_kind] : null;
@@ -146,7 +146,7 @@ function DayStats({ s, day }: { s: Series; day: DayInfo }) {
       </dl>
       {complete ? (
         <div className="mt-3 border-t border-line pt-3 text-[13px] text-ink-2">
-          Average miss: GridCast <b className="tnum text-ink">{pct(mape("model"))}</b> · official{" "}
+          Average miss: model <b className="tnum text-ink">{pct(mape("model"))}</b> · official{" "}
           <b className="tnum text-ink">{pct(mape("pse"))}</b>
           {winner === "model" && <span className="ml-2 text-good">✓ closer</span>}
         </div>
@@ -183,7 +183,7 @@ export default function Forecast() {
       <PageHeader
         eyebrow="Forecast explorer"
         title="Predicted vs actual electricity demand"
-        description="Pick any two days since mid-2024 and compare the GridCast day-ahead forecast with what actually happened and with the official forecast."
+        description="Pick any two days since mid-2024 and compare the model's day-ahead forecast with what actually happened and with the official forecast."
       />
       {kpis.data ? (
         <KpiRow k={kpis.data} />

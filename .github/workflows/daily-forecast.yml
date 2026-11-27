@@ -40,7 +40,7 @@ jobs:
       - name: Refresh data and forecast tomorrow
         run: uv run --no-dev python -m pse_forecast.cli daily
         env:
-          # Connection string of the `gridcast_writer` user: it can add data and forecasts but
+          # Connection string of the `forecast_writer` user: it can add data and forecasts but
           # cannot change the model or drop anything (see docs/DEPLOY.md).
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           MANAGE_SCHEMA: "false"

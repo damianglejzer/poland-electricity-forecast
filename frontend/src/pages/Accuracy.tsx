@@ -23,7 +23,7 @@ import { dayLabel, num, pct } from "../lib/format";
 import { type ChartColors, useChartColors } from "../lib/theme";
 
 const SOURCES: { key: SourceKey; label: string; dashed?: boolean }[] = [
-  { key: "model", label: "GridCast model" },
+  { key: "model", label: "Model forecast" },
   { key: "pse", label: "Official forecast (PSE)" },
   { key: "baseline", label: "Naive guess (last week)", dashed: true },
 ];
@@ -339,7 +339,7 @@ export default function Accuracy() {
           subtitle={`${dayLabel(b.start, false)} – ${dayLabel(b.end, false)} · ${b.n_days} days · every 15 minutes`}
           className="border-accent/40 bg-gradient-to-br from-accent/[0.08] to-transparent lg:col-span-1"
         >
-          <div className="text-[13px] text-ink-2">On average the GridCast forecast misses by</div>
+          <div className="text-[13px] text-ink-2">On average the model's forecast misses by</div>
           <div className="tnum mt-1 text-[44px] font-semibold leading-none tracking-tight">
             {pct(b.summary.model.mape)}
           </div>
@@ -396,8 +396,8 @@ export default function Accuracy() {
             <p>
               Each point is one day. Spikes usually come from unusual days, such as public holidays, sudden
               weather changes or days with a lot of solar power, which are hard for every forecast. On days
-              where the blue line is below the orange one, the GridCast model was closer to reality than the
-              official forecast.
+              where the blue line is below the orange one, the model was closer to reality than the official
+              forecast.
             </p>
           </Explainer>
         </Card>

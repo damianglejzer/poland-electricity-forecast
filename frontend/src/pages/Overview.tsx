@@ -160,7 +160,7 @@ export default function Overview() {
             </li>
           </ul>
           <p className="mt-4 text-[15px] leading-relaxed text-ink-2">
-            <b className="text-ink">{SITE.name}</b> is an end-to-end machine-learning system that makes the
+            This project is an <b className="text-ink">end-to-end machine-learning system</b> that makes the
             same forecast automatically every day
             {beatsPse ? (
               <>
@@ -226,7 +226,7 @@ export default function Overview() {
               <p>
                 The <b className="text-ink">black line</b> is how much electricity the whole of Poland
                 actually used, in gigawatts. It stops at the latest measurement. The{" "}
-                <b className="text-ink">blue line</b> is the GridCast model's prediction and the{" "}
+                <b className="text-ink">blue line</b> is the model's prediction and the{" "}
                 <b className="text-ink">orange line</b> is the official forecast by PSE. Both were made the
                 day before.
               </p>

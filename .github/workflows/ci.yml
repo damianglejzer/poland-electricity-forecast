@@ -63,9 +63,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build the API image Render will run
-        run: docker build --target prod -t gridcast-api backend
+        run: docker build --target prod -t poland-electricity-api backend
       - name: Smoke-test the image
         run: |
-          docker run -d --name api -p 8000:8000 -e DATABASE_URL=sqlite:// gridcast-api
+          docker run -d --name api -p 8000:8000 -e DATABASE_URL=sqlite:// poland-electricity-api
           for i in $(seq 1 30); do curl -fs localhost:8000/api/health && exit 0; sleep 1; done
           docker logs api; exit 1

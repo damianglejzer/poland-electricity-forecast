@@ -2,7 +2,7 @@
 # Render builds the last stage of backend/Dockerfile ("prod") and passes the port in $PORT.
 services:
   - type: web
-    name: gridcast-api
+    name: poland-electricity-api
     runtime: docker
     plan: free
     region: frankfurt
@@ -14,10 +14,10 @@ services:
       paths:
         - backend/**
     envVars:
-      # Neon connection string of the READ-ONLY user `gridcast_api` (see docs/DEPLOY.md).
+      # Neon connection string of the READ-ONLY user `forecast_api` (see docs/DEPLOY.md).
       - key: DATABASE_URL
         sync: false
-      # Your Vercel URL, e.g. https://gridcast.vercel.app (comma-separate several).
+      # Your Vercel URL, e.g. https://poland-electricity-forecast.vercel.app (comma-separate several).
       - key: CORS_ORIGINS
         sync: false
       # No public MLflow server in production: hide the link on the model card.
