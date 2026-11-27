@@ -5,12 +5,20 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 
 from pse_forecast import db, services
-from pse_forecast.api.main import app
+from pse_forecast.api.main import app, clear_caches
+from pse_forecast.security import limits
 
 
 @pytest.fixture(scope="module")
 def client(seeded_engine):
     return TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def fresh_api_state():
+    """Responses are cached and rate-limited; give every test a clean slate."""
+    clear_caches()
+    limits.reset()
 
 
 def test_training_beats_naive_baseline(seeded_engine):

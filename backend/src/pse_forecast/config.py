@@ -23,6 +23,16 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000,http://localhost:5173"
     # Public database that `cli publish` promotes the local model and data to (e.g. Neon).
     publish_database_url: str = ""
+    # --- Public API protection (see security.py) ---
+    # Read the client address from proxy headers. Enable only behind a proxy (Render).
+    trust_proxy_headers: bool = False
+    rate_limit_per_minute: int = 120  # per client, all endpoints
+    whatif_rate_limit_per_minute: int = 30  # per client, model runs
+    global_rate_limit_per_minute: int = 3000  # all clients together
+    whatif_max_concurrent: int = 2
+    max_body_bytes: int = 8192
+    # Create missing tables on startup. Disable for a read-only database user (production API).
+    manage_schema: bool = True
     pse_base_url: str = "https://api.raporty.pse.pl/api"
     http_timeout: float = 60.0
 

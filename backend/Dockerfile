@@ -27,5 +27,6 @@ RUN uv sync --frozen --no-dev
 RUN useradd --create-home app
 USER app
 EXPOSE 8000
-# Render (and most PaaS) pass the port in $PORT.
-CMD ["sh", "-c", "uvicorn pse_forecast.api.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]
+# Render (and most PaaS) pass the port in $PORT. Cap concurrent connections so a flood of requests
+# gets quick 503s instead of exhausting the 512 MB instance; don't advertise the server software.
+CMD ["sh", "-c", "exec uvicorn pse_forecast.api.main:app --host 0.0.0.0 --port ${PORT:-8000} --limit-concurrency 40 --timeout-keep-alive 5 --no-server-header"]

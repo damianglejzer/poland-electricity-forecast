@@ -124,8 +124,12 @@ def _engine(url: str) -> Engine:
     if url.startswith("sqlite"):
         engine = create_engine(url, connect_args={"check_same_thread": False}, poolclass=StaticPool)
     else:
-        engine = create_engine(url, pool_pre_ping=True)
-    metadata.create_all(engine)
+        # Pre-ping and recycle: serverless Postgres (Neon) closes idle connections when it sleeps.
+        engine = create_engine(
+            url, pool_pre_ping=True, pool_size=5, max_overflow=5, pool_recycle=300, pool_timeout=10
+        )
+    if get_settings().manage_schema:
+        metadata.create_all(engine)
     return engine
 
 
