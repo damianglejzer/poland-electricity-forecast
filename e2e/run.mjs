@@ -71,6 +71,14 @@ const isLight = await dark.evaluate(() => !document.documentElement.classList.co
 if (!isLight) problems.push("[interaction] theme toggle did not switch to light mode");
 console.log("ok  theme toggle");
 
+// README hero: exactly what a visitor sees first, without scrolling.
+const hero = await newPage("dark", { width: 1440, height: 900 });
+await hero.goto(`${BASE}/`, { waitUntil: "networkidle" });
+await hero.waitForSelector("[role=img] svg", { timeout: 30000 });
+await hero.waitForTimeout(1200);
+await hero.screenshot({ path: `${OUT}/hero.png` });
+console.log("ok  hero (above the fold) -> hero.png");
+
 const light = await newPage("light");
 await visit(light, PAGES[0], "overview-light");
 await visit(light, PAGES[4], "how-it-works-light");
