@@ -29,10 +29,10 @@ Allow about 30–45 minutes. Do the steps in order: each one needs a value from 
 1. On GitHub, create a new **empty, public** repository (no README or license; for example `poland-electricity-forecast`).
 2. In the project folder:
    ```bash
-   git remote add origin https://github.com/YOUR-USERNAME/poland-electricity-forecast.git
+   git remote add origin https://github.com/damianglejzer/poland-electricity-forecast.git
    git push -u origin main
    ```
-3. In `README.md`, replace `YOUR-USERNAME` / `YOUR-APP` later, once you know the URLs.
+3. The README's badges and links already point to `github.com/damianglejzer/poland-electricity-forecast`.
 
 ## 2. Create the database (Neon)
 
@@ -100,8 +100,8 @@ Create the users with the SQL above, not with Neon's "Roles" page: users created
    | Name | Value |
    |---|---|
    | `VITE_API_URL` | your Render URL, e.g. `https://poland-electricity-api-xxxx.onrender.com` (no trailing slash, no `/api`) |
-   | `VITE_GITHUB_URL` | `https://github.com/YOUR-USERNAME/poland-electricity-forecast` (shows "Source code" buttons) |
-   | `VITE_LINKEDIN_URL` | your LinkedIn profile URL (optional) |
+   | `VITE_GITHUB_URL` | `https://github.com/damianglejzer/poland-electricity-forecast` (shows "Source code" buttons) |
+   | `VITE_LINKEDIN_URL` | `https://www.linkedin.com/in/damianglejzer/` |
    | `VITE_AUTHOR_NAME` | your name as it should appear (optional; defaults to Damian Glejzer) |
 
 4. Click **Deploy**. Note the URL, e.g. `https://poland-electricity-forecast.vercel.app`. You can rename the project to get a nicer subdomain.
@@ -142,7 +142,7 @@ This also gives you an uptime history and an email if the API goes down. Render'
 
 ## 9. Final touches
 
-- In `README.md`, replace `YOUR-USERNAME` and `YOUR-APP` with the real values and commit. The badges and the demo link then work.
+- If Vercel gave you an address other than `https://poland-electricity-forecast.vercel.app`, update the **Live demo** link at the top of `README.md` and commit.
 - Add the live URL to the GitHub repository's **About** box and to your CV / LinkedIn.
 
 ---

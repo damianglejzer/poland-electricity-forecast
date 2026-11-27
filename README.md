@@ -4,8 +4,8 @@
 
 **Day-ahead forecasts of Poland's national electricity demand, every 15 minutes, produced by an end-to-end MLOps pipeline and scored every day against the grid operator's official forecast.**
 
-[![CI](https://github.com/YOUR-USERNAME/poland-electricity-forecast/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR-USERNAME/poland-electricity-forecast/actions/workflows/ci.yml)
-[![Daily forecast](https://github.com/YOUR-USERNAME/poland-electricity-forecast/actions/workflows/daily-forecast.yml/badge.svg)](https://github.com/YOUR-USERNAME/poland-electricity-forecast/actions/workflows/daily-forecast.yml)
+[![CI](https://github.com/damianglejzer/poland-electricity-forecast/actions/workflows/ci.yml/badge.svg)](https://github.com/damianglejzer/poland-electricity-forecast/actions/workflows/ci.yml)
+[![Daily forecast](https://github.com/damianglejzer/poland-electricity-forecast/actions/workflows/daily-forecast.yml/badge.svg)](https://github.com/damianglejzer/poland-electricity-forecast/actions/workflows/daily-forecast.yml)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![LightGBM](https://img.shields.io/badge/LightGBM-gradient%20boosting-2f9e44)
 ![MLflow](https://img.shields.io/badge/MLflow-tracking%20%26%20registry-0194E2?logo=mlflow&logoColor=white)
@@ -178,7 +178,7 @@ Six pages, written for people who aren't energy or ML specialists. Every chart h
 Requirements: **Docker** (with Compose) and **make**. No API keys.
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/poland-electricity-forecast.git
+git clone https://github.com/damianglejzer/poland-electricity-forecast.git
 cd poland-electricity-forecast
 make up                      # Postgres, MLflow, API and website
 make refresh && make train   # download ~2.5 years of data (~1 min), train and register (~1.5 min)
@@ -265,7 +265,7 @@ docs/                     DECISIONS.md · DEPLOY.md · SECURITY.md · screenshot
 
 ## Author
 
-**Damian Glejzer**: ML / MLOps engineer. [LinkedIn](https://www.linkedin.com/in/YOUR-LINKEDIN) · [GitHub](https://github.com/YOUR-USERNAME)
+**Damian Glejzer**: ML / MLOps engineer. [LinkedIn](https://www.linkedin.com/in/damianglejzer/) · [GitHub](https://github.com/damianglejzer)
 
 ---
 
