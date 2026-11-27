@@ -167,7 +167,7 @@ Six pages, written for people who aren't energy or ML specialists. Every chart h
 | Layer | Tools |
 |---|---|
 | Machine learning | LightGBM, SHAP (TreeSHAP), pandas, NumPy, Pandera |
-| MLOps | MLflow, Docker, GitHub Actions, pytest, Playwright, Dependabot |
+| MLOps | MLflow, Docker, GitHub Actions, pytest, Playwright |
 | Backend | Python 3.12, FastAPI, SQLAlchemy Core, PostgreSQL, uv, Ruff |
 | Frontend | React 18, TypeScript, Vite, Tailwind CSS, ECharts, TanStack Query |
 | Hosting | Vercel (website), Render (API), Neon (PostgreSQL), GitHub Actions (scheduler) |
@@ -240,7 +240,7 @@ backend/                  Python package (uv, Ruff, pytest) · multi-stage Docke
 frontend/                 React + TypeScript + Vite + Tailwind + ECharts · vercel.json
 e2e/run.mjs               Playwright checks of every page + screenshots
 infra/                    MLflow image, Postgres init, Neon least-privilege users (roles.sql)
-.github/                  CI, the daily forecast job, Dependabot
+.github/                  CI and the daily forecast job
 render.yaml               Render blueprint for the API
 docs/                     DECISIONS.md · DEPLOY.md · SECURITY.md · screenshots
 ```
